@@ -2,7 +2,7 @@ import * as signalR from '@aspnet/signalr';
 
 const server = 'http://localhost:60860';
 
-function start() {
+async function start() {
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(`${server}/hub/client`)
         .build();
@@ -12,11 +12,16 @@ function start() {
         console.log('Kicked :(')
     });
 
-    connection.start()
-        .catch(err => console.error(err.toString()))
-        .then(() => {
-            connection.send("Connect", "KickMe")
-        });
+    try {
+        await connection.start();
+        console.log('Connection was started');
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        connection.send("Connect", "KickMe");
+        
+    } catch(err) {
+        console.error('Connection error', err.toString());
+    }
 }
 
 start();
