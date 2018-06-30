@@ -13,6 +13,7 @@ namespace Server.WebApi
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls("http://localhost:60860")
                 .Build();
     }
 }
