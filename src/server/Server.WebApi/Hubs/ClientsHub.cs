@@ -19,7 +19,7 @@ namespace Server.WebApi.Hubs
             if (name == "KickMe")
                 return Clients.Client(connectionId).SendAsync("Kicked");
 
-            return _adminsHub.Clients.All.SendAsync("ClientConnected", name, connectionId);
+            return _adminsHub.Clients.All.SendAsync("ClientConnected", connectionId, name);
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
