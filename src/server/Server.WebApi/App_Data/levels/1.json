@@ -1,0 +1,17 @@
+{
+    "name": "Level 1 - Basics",
+    "rooms": 8,
+    "slotsPerRoom": 1,
+    "locked": false,
+    "grid": {
+        "rows": 5,
+        "cols": 5,
+        "walls": [
+            "0.0",
+            "0.1"
+        ],
+        "players": {
+            "start": "fixed:2.2"
+        }
+    }
+}
