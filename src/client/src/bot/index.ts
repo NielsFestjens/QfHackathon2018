@@ -16,10 +16,14 @@ async function start() {
         await connection.start();
         console.log('Connection was started');
 
+        document.write('Connected!');
+
         await new Promise(resolve => setTimeout(resolve, 3000));
         connection.send("Connect", "KickMe");
-        
-    } catch(err) {
+
+        document.write(' ...aaaaand kicked =(');
+
+    } catch (err) {
         console.error('Connection error', err.toString());
     }
 }

@@ -1,13 +1,16 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: './src/app.ts',
+    entry: {
+        bot: './src/bot/index.ts',
+        spectator: './src/spectator/index.ts'
+    },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].js',
         publicPath: "/dist/",
         path: path.resolve(__dirname, 'dist'),
-        // path: __dirname
     },
     module: {
         rules: [
@@ -21,4 +24,20 @@ module.exports = {
     resolve: {
         extensions: [".tsx", ".ts", ".js"]
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            chunks: ['bot'],
+            template: './src/bot/index.html',
+            filename: 'bot.html',
+            publicPath: '.'
+        }),
+        new HtmlWebpackPlugin({
+            chunks: ['spectator'],
+            template: './src/spectator/index.html',
+            filename: 'spectator.html'
+        })
+    ],
+    devServer: {
+        contentBase: path.join(__dirname, 'dist')
+    }
 };
