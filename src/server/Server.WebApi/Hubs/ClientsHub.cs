@@ -13,13 +13,14 @@ namespace Server.WebApi.Hubs
             _adminsHub = adminsHub;
         }
 
-        public Task Connect(string name)
+        public async Task Connect(string name, Guid? apiKey)
         {
             var connectionId = Context.ConnectionId;
-            if (name == "KickMe")
-                return Clients.Client(connectionId).SendAsync("Kicked");
+            // var isSpectator = apiKey != null && ValidApiKeys.Contains(apiKey.ToString());
 
-            return _adminsHub.Clients.All.SendAsync("ClientConnected", connectionId, name);
+            await _adminsHub.Clients.All.SendAsync("ClientConnected", connectionId, name);
+
+            // 1. Add client to list of connected 
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
