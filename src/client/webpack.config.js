@@ -22,7 +22,12 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [".tsx", ".ts", ".js"]
+        extensions: [".tsx", ".ts", ".js"],
+        alias: {
+            common: path.resolve(__dirname, 'src/common/'),
+            bot: path.resolve(__dirname, 'src/bot/'),
+            spectator: path.resolve(__dirname, 'src/spectator/')
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({

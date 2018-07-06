@@ -1,1 +1,3 @@
-console.log("I'm a spectator");
+import printer from 'common/printer';
+
+printer("I'm a spectator!!!");
