@@ -52,7 +52,7 @@ Common code that provides a level renderer to spectator and bot
 ```
 run("Team Tim", (updates, actions) => {
     updates.subscribe(update => {
-
+        actions.moveUp();
     })
 })
 ```
