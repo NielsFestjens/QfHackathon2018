@@ -21,8 +21,6 @@ async function start() {
         await new Promise(resolve => setTimeout(resolve, 3000));
         connection.send("Connect", "KickMe");
 
-        document.write(' ...aaaaand kicked =(');
-
     } catch (err) {
         console.error('Connection error', err.toString());
     }
