@@ -32,15 +32,22 @@ class AdminContent extends Component {
         );
     }
 
-    handleSpectatorConnected = () => {
-        console.log(arguments);
+    handleSpectatorConnected = (spectator) => {
+        this.setState({
+            players: {
+                ...this.state.players,
+                [spectator.connectionId]: spectator
+            }
+        })
     }
 
-    handlePlayerConnected = (connectionId, name) => {
-        this.setState({ players: { 
-            ...this.state.players,  
-            [name]: { connectionId, name }
-        } })
+    handlePlayerConnected = (player) => {
+        this.setState({
+            players: {
+                ...this.state.players,
+                [player.name]: player
+            }
+        })
     }
 }
 
