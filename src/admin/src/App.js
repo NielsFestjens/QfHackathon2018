@@ -21,11 +21,13 @@ class App extends Component {
       .withUrl(`${server}/hub/client`)
       .build();
 
-    await this.connection.start();
+    await this.connection.start().catch(error => console.error(error.toString()));
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     this.setState({ loading: false, connected: true });
   }
+
+
   render() {
     return (
       <div>
