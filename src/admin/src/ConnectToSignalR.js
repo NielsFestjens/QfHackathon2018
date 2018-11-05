@@ -34,7 +34,6 @@ class ConnectToSignalR extends Component {
     render() {
         const { server, children } = this.props;
         const { connecting, connected, error } = this.state;
-        const hasError = !!error;
 
         if (connecting) {
             return <i>Connecting...</i>;
@@ -53,7 +52,7 @@ class ConnectToSignalR extends Component {
                     <button onClick={this.handleReconnect}>Reconnect</button>
                 </p>
                 <pre>
-                    {JSON.stringify(this.state.error, null, 4)}
+                    {JSON.stringify(error, null, 4)}
                 </pre>
             </Fragment>
         )
@@ -67,8 +66,6 @@ class ConnectToSignalR extends Component {
         const onFailed = (error) => {
             this.setState({ connecting: false, error });
         }
-
-        console.log('connecting');
 
         this.setState({ connecting: true });
 
