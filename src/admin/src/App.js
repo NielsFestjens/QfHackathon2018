@@ -1,32 +1,18 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ConnectToSignalR from './ConnectToSignalR';
+import AdminContent from './AdminContent';
 
 const server = 'http://localhost:60860';
 
-class App extends Component {
-
-  connection;
-
-  constructor() {
-    super();
-    this.state = {
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>
-          This is the admin
-        </h1>
-        <ConnectToSignalR server={server}>
-          {connection => (
-            <strong>Connected!</strong>
-          )}
-        </ConnectToSignalR>
-      </div>
-    );
-  }
-}
+const App = () => (
+  <div>
+    <h1>
+      New Year's Chapter 2019 - Admin
+    </h1>
+    <ConnectToSignalR server={server}>
+      {connection => <AdminContent connection={connection} />}
+    </ConnectToSignalR>
+  </div>
+);
 
 export default App;
