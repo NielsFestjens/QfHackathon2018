@@ -1,31 +1,55 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Server.Game.Players;
+using Server.Game.Spectators;
 
 namespace Server.WebApi.Hubs
 {
     public class ClientsHub : Hub
     {
-        private readonly IHubContext<AdminsHub> _adminsHub;
+        private readonly IPlayerConnector _playerConnector;
+        private readonly ISpectatorConnector _spectatorConnector;
 
-        public ClientsHub(IHubContext<AdminsHub> adminsHub)
+        public ClientsHub(
+            IPlayerConnector playerConnector,
+            ISpectatorConnector spectatorConnector)
         {
-            _adminsHub = adminsHub;
+            _playerConnector = playerConnector;
+            _spectatorConnector = spectatorConnector;
         }
 
-        public async Task Connect(string name, Guid? apiKey)
+        public Task Connect(string name, Guid? apiKey)
         {
-            var connectionId = Context.ConnectionId;
-            // var isSpectator = apiKey != null && ValidApiKeys.Contains(apiKey.ToString());
-
-            await _adminsHub.Clients.All.SendAsync("ClientConnected", connectionId, name);
-
-            // 1. Add client to list of connected 
+            if (apiKey.HasValue)
+            {
+                if (!_spectatorConnector.IsAuthorized(apiKey.Value))
+                {
+                    Context.Abort();
+                }
+                else
+                {
+                    _spectatorConnector.Connect(Context.ConnectionId);
+                }
+            }
+            else
+            {
+                _playerConnector.Connect(Context.ConnectionId, name);
+            }
+            return Task.CompletedTask;
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            return _adminsHub.Clients.All.SendAsync("ClientDisconnected", Context.ConnectionId);
+            if (_spectatorConnector.IsConnected(Context.ConnectionId))
+            {
+                _spectatorConnector.Disconnect(Context.ConnectionId);
+            }
+            if (_playerConnector.IsConnected(Context.ConnectionId))
+            {
+                _playerConnector.Disconnect(Context.ConnectionId);
+            }
+            return Task.CompletedTask;
         }
     }
 }

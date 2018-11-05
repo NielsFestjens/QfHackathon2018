@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Server.WebApi.DependencyInjection;
 using Server.WebApi.Hubs;
 
 namespace Server.WebApi
@@ -21,6 +22,7 @@ namespace Server.WebApi
             services.AddMvc();
             services.AddSignalR();
             services.AddCors();
+            services.AddGame();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
