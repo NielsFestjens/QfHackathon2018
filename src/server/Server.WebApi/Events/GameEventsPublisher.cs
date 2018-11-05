@@ -22,13 +22,11 @@ namespace Server.WebApi
         private IClientProxy Spectators => _clientsHub.Clients.Group("Spectators");
 
         private IClientProxy AdminsAndSpectators => Admins.And(Spectators);
-        private IClientProxy Client(string id) => _clientsHub.Clients.User(id);
+        private IClientProxy Client(string id) => _clientsHub.Clients.Client(id);
         private IClientProxy AdminsAndSpectatorsAndClient(string id) => AdminsAndSpectators.And(Client(id));
 
         public Task OnPlayerConnected(Player player)
-        {
-            return AdminsAndSpectatorsAndClient(player.Id).SendAsync("PlayerConnected", new { connectionId = player.Id, name = player.Name });
-        }
+            => AdminsAndSpectatorsAndClient(player.Id).SendAsync("PlayerConnected", new { connectionId = player.Id, name = player.Name });
 
         public Task OnPlayerDisconnected(string connectionId)
             => AdminsAndSpectators.SendAsync("PlayerDisconnected", new { connectionId });
@@ -40,6 +38,6 @@ namespace Server.WebApi
             => Admins.SendAsync("SpectatorDisconnected", new { connectionId });
 
         public Task OnGameStarted(Game.Players.Game game)
-            => AdminsAndSpectatorsAndClient(game.PlayerId).SendAsync("GameStarted", new { game.PlayerId, game.Level });
+            => AdminsAndSpectatorsAndClient(game.PlayerId).SendAsync("GameStarted", new {game.PlayerId, game.Level});
     }
 }
