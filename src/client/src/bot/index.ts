@@ -5,6 +5,7 @@ const server = 'http://localhost:60860';
 async function start() {
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(`${server}/hub/client`)
+        .configureLogging(signalR.LogLevel.Debug)
         .build();
 
     const gameConnection = new GameConnection(connection);
@@ -62,7 +63,7 @@ class Game implements IGame {
     start = async () => {
         await this.connection.start();
         document.write('Connected!');
-        this.connection.connect({ name: "KickMe"});
+        this.connection.connect({ name: "KickMe" });
     } 
 
     kicked = () => {

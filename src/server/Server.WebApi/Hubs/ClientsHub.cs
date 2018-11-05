@@ -19,11 +19,11 @@ namespace Server.WebApi.Hubs
             _spectatorConnector = spectatorConnector;
         }
 
-        public Task Connect(string name, Guid? apiKey)
+        public Task Connect(ConnectCommand command)
         {
-            if (apiKey.HasValue)
+            if (command.ApiKey.HasValue)
             {
-                if (!_spectatorConnector.IsAuthorized(apiKey.Value))
+                if (!_spectatorConnector.IsAuthorized(command.ApiKey.Value))
                 {
                     Context.Abort();
                 }
@@ -34,7 +34,7 @@ namespace Server.WebApi.Hubs
             }
             else
             {
-                _playerConnector.Connect(Context.ConnectionId, name);
+                _playerConnector.Connect(Context.ConnectionId, command.Name);
             }
             return Task.CompletedTask;
         }
@@ -51,5 +51,11 @@ namespace Server.WebApi.Hubs
             }
             return Task.CompletedTask;
         }
+    }
+
+    public class ConnectCommand
+    {
+        public string Name { get; set; }
+        public Guid? ApiKey { get; set; }
     }
 }

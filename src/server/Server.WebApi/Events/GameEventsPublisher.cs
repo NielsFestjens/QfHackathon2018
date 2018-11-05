@@ -1,10 +1,10 @@
-
-
-using System.Threading;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Server.Game;
+using Server.Game.Players;
 using Server.WebApi.Hubs;
+using Server.WebApi.SignalR;
 
 namespace Server.WebApi
 {
@@ -22,26 +22,25 @@ namespace Server.WebApi
         private IClientProxy Admins => _adminsHub.Clients.All;
         private IClientProxy Spectators => _clientsHub.Clients.Group("Spectators");
 
-        public Task OnPlayerConnected(string connectionId, string name)
-        {
-            var adminsSendTask = Admins.SendAsync("PlayerConnected", new { connectionId, name });
-            var spectatorsSendTask = Spectators.SendAsync("PlayerConnected", new { connectionId, name });
+        private IClientProxy AdminsAndSpectators => Admins.And(Spectators);
+        private IClientProxy Client(string id) => _clientsHub.Clients.User(id);
+        private IClientProxy AdminsAndSpectatorsAndClient(string id) => AdminsAndSpectators.And(Client(id));
 
-            return Task.WhenAll(adminsSendTask, spectatorsSendTask);
+        public Task OnPlayerConnected(Player player)
+        {
+            return AdminsAndSpectatorsAndClient(player.Id).SendAsync("PlayerConnected", new { connectionId = player.Id, name = player.Name });
         }
 
         public Task OnPlayerDisconnected(string connectionId)
-        {
-            var adminsSendTask = Admins.SendAsync("PlayerConnected", new { connectionId });
-            var spectatorsSendTask = Spectators.SendAsync("PlayerConnected", new { connectionId });
-
-            return Task.WhenAll(adminsSendTask, spectatorsSendTask);
-        }
+            => AdminsAndSpectators.SendAsync("PlayerDisconnected", new { connectionId });
 
         public Task OnSpectatorConnected(string connectionId)
             => Admins.SendAsync("SpectatorConnected", new { connectionId });
 
         public Task OnSpectatorDisconnected(string connectionId)
             => Admins.SendAsync("SpectatorDisconnected", new { connectionId });
+
+        public Task OnGameStarted(Game.Players.Game game)
+            => AdminsAndSpectatorsAndClient(game.PlayerId).SendAsync("GameStarted", new { game.PlayerId, game.Level });
     }
 }
