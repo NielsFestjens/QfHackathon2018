@@ -1,4 +1,7 @@
-﻿namespace Server.Game.Players
+﻿using System.IO;
+using Newtonsoft.Json;
+
+namespace Server.Game.Levels
 {
     public interface ILevelManager
     {
@@ -9,10 +12,10 @@
     {
         public LevelData LoadLevelData(int level)
         {
-            return new LevelData
-            {
-                Level = level
-            };
+            var levelDataJson = File.ReadAllText($"App_Data\\levels\\{level}.json");
+            var levelData = JsonConvert.DeserializeObject<LevelData>(levelDataJson);
+            levelData.Level = level;
+            return levelData;
         }
     }
 }

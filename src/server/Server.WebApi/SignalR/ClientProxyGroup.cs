@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ namespace Server.WebApi.SignalR
 
         public Task SendCoreAsync(string method, object[] args, CancellationToken cancellationToken = new CancellationToken())
         {
-            Console.WriteLine($"Sending {method}");
             return Task.WhenAll(_proxies.Select(proxy => proxy.SendCoreAsync(method, args, cancellationToken)));
         }
     }

@@ -5,7 +5,6 @@ const server = 'http://localhost:60860';
 async function start() {
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(`${server}/hub/client`)
-        .configureLogging(signalR.LogLevel.Debug)
         .build();
 
     const gameConnection = new GameConnection(connection);
@@ -62,7 +61,6 @@ class Game implements IGame {
 
     start = async () => {
         await this.connection.start();
-        document.write('Connected!');
         this.connection.connect({ name: "KickMe" });
     } 
 
@@ -71,7 +69,7 @@ class Game implements IGame {
     }
 
     started = (event: GameStartedEvent) => {
-        this.grid = new Grid(event.sizeX, event.sizeY);
+        this.grid = new Grid(event.columns, event.rows);
     };
 
     updated = (event: GameUpdatedEvent) => {
@@ -137,9 +135,9 @@ class Grid {
     }
 
     updateTile = (tileInfo: TileInfo) => {
-        const tile = this.tiles[tileInfo.posX][tileInfo.posY];
+        const tile = this.tiles[tileInfo.column][tileInfo.row];
+
         tile.informationAge = 0;
-        
     }
 }
 
@@ -148,8 +146,10 @@ class Tile {
 }
 
 type GameStartedEvent = {
-    sizeX: number;
-    sizeY: number;
+    level: number;
+    name: string;
+    columns: number;
+    rows: number;
 }
 
 type GameUpdatedEvent = {
@@ -157,8 +157,8 @@ type GameUpdatedEvent = {
 }
 
 type TileInfo = {
-    posX: number;
-    posY: number;
+    row: number;
+    column: number;
     contents: TileInfoContent[];
 }
 
@@ -167,11 +167,12 @@ type TileInfoContent = {
 }
 
 enum TileInfoContentType {
-    unknown = 0,
-    wall = 1,
-    friendly = 2,
-    enemy = 3,
-    bullet = 4
+    Unknown = 0,
+    Obstacle = 1,
+    Object = 2,
+    Character = 3,
+    Enemy = 4,
+    Friendly = 5
 }
 
 type AttackCommand = {

@@ -9,6 +9,7 @@ namespace Server.Game
         Task OnPlayerDisconnected(string connectionId);
         Task OnSpectatorConnected(string connectionId);
         Task OnSpectatorDisconnected(string connectionId);
-        Task OnGameStarted(Players.Game game);
+        Task OnGameStarted(Game game);
+        void OnGameUpdated(Game game);
     }
 }

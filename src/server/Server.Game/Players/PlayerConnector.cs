@@ -1,4 +1,5 @@
 using System;
+using Server.Game.Levels;
 
 namespace Server.Game.Players
 {
@@ -39,8 +40,14 @@ namespace Server.Game.Players
         public void StartNextLevel(Player player)
         {
             var game = player.StartNextLevel(_levelManager.LoadLevelData);
-            var task = _events.OnGameStarted(game);
-            task.Wait();
+            _events.OnGameStarted(game);
+
+            ProcessUpdate(game);
+        }
+
+        public void ProcessUpdate(Game game)
+        {
+            _events.OnGameUpdated(game);
         }
 
         public void Disconnect(string id)

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Server.Game;
@@ -23,7 +25,9 @@ namespace Server.WebApi
 
         private IClientProxy AdminsAndSpectators => Admins.And(Spectators);
         private IClientProxy Client(string id) => _clientsHub.Clients.Client(id);
+        private IClientProxy Clients(IEnumerable<string> ids) => _clientsHub.Clients.ByIds(ids);
         private IClientProxy AdminsAndSpectatorsAndClient(string id) => AdminsAndSpectators.And(Client(id));
+        private IClientProxy AdminsAndSpectatorsAndClients(IEnumerable<string> ids) => AdminsAndSpectators.And(Clients(ids));
 
         public Task OnPlayerConnected(Player player)
             => AdminsAndSpectatorsAndClient(player.Id).SendAsync("PlayerConnected", new { connectionId = player.Id, name = player.Name });
@@ -37,7 +41,16 @@ namespace Server.WebApi
         public Task OnSpectatorDisconnected(string connectionId)
             => Admins.SendAsync("SpectatorDisconnected", new { connectionId });
 
-        public Task OnGameStarted(Game.Players.Game game)
-            => AdminsAndSpectatorsAndClient(game.PlayerId).SendAsync("GameStarted", new {game.PlayerId, game.Level});
+        public Task OnGameStarted(Game.Game game)
+            => AdminsAndSpectatorsAndClients(game.Players.Select(x => x.Player.Id)).SendAsync("GameStarted", new { game.Level, game.Name, game.Rows, game.Columns });
+
+        public void OnGameUpdated(Game.Game game)
+        {
+            AdminsAndSpectators.SendAsync("GameUpdated", new { game.Tiles });
+            foreach (var player in game.Players)
+            {
+                Client(player.Player.Id).SendAsync("GameUpdated", new { Tiles = game.GetViewportFor(player) });
+            }
+        }
     }
 }

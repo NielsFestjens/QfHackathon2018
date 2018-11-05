@@ -1,4 +1,5 @@
 using System;
+using Server.Game.Levels;
 
 namespace Server.Game.Players
 {
@@ -23,7 +24,7 @@ namespace Server.Game.Players
 
             var nextLevel = GameProgress + 1;
             var nextLevelData = levelDataResolver(nextLevel);
-            _activeGame = new Game(Id, nextLevelData);
+            _activeGame = new Game(nextLevelData, this);
             return _activeGame;
         }
     }
