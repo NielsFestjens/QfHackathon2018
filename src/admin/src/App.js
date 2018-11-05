@@ -21,11 +21,15 @@ class App extends Component {
       .withUrl(`${server}/hub/client`)
       .build();
 
-    await this.connection.start();
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await this.connection.start().catch(error => console.error(error.toString()));
 
     this.setState({ loading: false, connected: true });
   }
+
+  async componentWillUnmount() {
+    this.connection.stop();
+  }
+
   render() {
     return (
       <div>
