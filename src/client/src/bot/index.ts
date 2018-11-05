@@ -7,23 +7,178 @@ async function start() {
         .withUrl(`${server}/hub/client`)
         .build();
 
-    connection.on("Kicked", () => {
-        connection.stop();
-        console.log('Kicked :(')
-    });
-
+    const gameConnection = new GameConnection(connection);
+    const game = new Game(gameConnection);
+    
     try {
-        await connection.start();
-        console.log('Connection was started');
-
-        document.write('Connected!');
-
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        connection.send("Connect", "KickMe");
-
+        await game.start();
     } catch (err) {
         console.error('Connection error', err.toString());
     }
+}
+
+class GameConnection {
+
+    game!: IGame;
+
+    constructor(
+        private connection: signalR.HubConnection
+    ) {
+        this.connection.on("Kicked", () => this.game.kicked())
+        this.connection.on("GameStarted", (event: GameStartedEvent) => this.game.started(event))
+        this.connection.on("GameUpdated", (event: GameUpdatedEvent) => this.game.updated(event))
+    }
+
+    register = (game: IGame) => {
+        this.game = game;
+    }
+
+    start = () => this.connection.start();
+    connect = (command: ConnectCommand) => this.connection.send("Connect", command);
+    stop = () => this.connection.stop();
+    moveUp = () => this.connection.send("MoveUp");
+    moveDown = () => this.connection.send("MoveDown");
+    moveLeft = () => this.connection.send("MoveLeft");
+    moveRight = () => this.connection.send("MoveRight");
+    attack = (command: AttackCommand) => this.connection.send("Attack", command);
+}
+
+interface IGame {
+    kicked: () => void;
+    started: (event: GameStartedEvent) => void;
+    updated: (event: GameUpdatedEvent) => void;
+}
+
+class Game implements IGame {
+    grid: Grid = new Grid(0, 0);
+    player: Player = new Player();
+
+    constructor(
+        private connection: GameConnection
+    ) {
+        connection.register(this);
+    }
+
+    start = async () => {
+        await this.connection.start();
+        document.write('Connected!');
+        this.connection.connect({ name: "KickMe"});
+    } 
+
+    kicked = () => {
+        this.connection.stop();
+    }
+
+    started = (event: GameStartedEvent) => {
+        this.grid = new Grid(event.sizeX, event.sizeY);
+    };
+
+    updated = (event: GameUpdatedEvent) => {
+        this.grid.update(event);
+        const nextMove = this.player.getNextAction(this.grid);
+        
+        switch(nextMove.action) {
+            case ActionType.moveUp: this.connection.moveUp();
+            case ActionType.moveDown: this.connection.moveDown();
+            case ActionType.moveLeft: this.connection.moveLeft();
+            case ActionType.moveRight: this.connection.moveRight();
+            case ActionType.moveRight: this.connection.moveRight();
+        }
+    };
+}
+
+class Player {
+    getNextAction(grid: Grid) {
+        const nextAction = new PlayerAction();
+        nextAction.action = ActionType.moveRight;        
+        return nextAction;
+    }
+}
+
+class PlayerAction {
+    action: ActionType = 0;
+    payload: any;
+}
+
+enum ActionType {
+    unknown = 0,
+    moveUp = 1,
+    moveDown = 2,
+    moveLeft = 3,
+    moveRight = 4,
+    attack = 5
+}
+
+class Grid {
+
+    tiles: Tile[][];
+
+    constructor(sizeX: number, sizeY: number) {
+        this.tiles = [];
+        for (let x = 0; x < sizeX; x++) {
+            this.tiles[x] = [];
+            for (let y = 0; y < sizeY; y++) {
+                this.tiles[x][y] = new Tile();
+            }
+        }
+    }
+
+    update = (data: GameUpdatedEvent) => {
+        for (let tileRow of this.tiles) {
+            for (let tile of tileRow) {
+                ++tile.informationAge;
+            }
+        }
+
+        for (let tile of data.tiles) {
+            this.updateTile(tile);
+        }
+    }
+
+    updateTile = (tileInfo: TileInfo) => {
+        const tile = this.tiles[tileInfo.posX][tileInfo.posY];
+        tile.informationAge = 0;
+        
+    }
+}
+
+class Tile {
+    informationAge: number = 0;
+}
+
+type GameStartedEvent = {
+    sizeX: number;
+    sizeY: number;
+}
+
+type GameUpdatedEvent = {
+    tiles: TileInfo[];
+}
+
+type TileInfo = {
+    posX: number;
+    posY: number;
+    contents: TileInfoContent[];
+}
+
+type TileInfoContent = {
+    type: TileInfoContentType;
+}
+
+enum TileInfoContentType {
+    unknown = 0,
+    wall = 1,
+    friendly = 2,
+    enemy = 3,
+    bullet = 4
+}
+
+type AttackCommand = {
+
+}
+
+type ConnectCommand = {
+    name: string;
 }
 
 start();
