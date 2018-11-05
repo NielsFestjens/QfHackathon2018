@@ -12,6 +12,8 @@ namespace Server.WebApi.DependencyInjection
             services.AddTransient<IPlayerConnector, PlayerConnector>();
             services.AddTransient<ISpectatorConnector, SpectatorConnector>();
             services.AddTransient<IGameEvents, GameEventsPublisher>();
+            services.AddSingleton<IPlayerManager, PlayerManager>();
+            services.AddTransient<ILevelManager, LevelManager>();
         }
     }
 }
