@@ -5,7 +5,7 @@ class SpectatorsList extends Component {
         const { spectators } = this.props;
 
         if (!spectators || !spectators.length) {
-            return <i>Er zijn zijn nog geen spectators geconnecteerd.</i>
+            return <i>Er zijn nog geen spectators geconnecteerd.</i>
         }
 
         return (

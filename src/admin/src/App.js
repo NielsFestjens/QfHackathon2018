@@ -9,7 +9,7 @@ const App = () => (
     <h1>
       New Year's Chapter 2019 - Admin
     </h1>
-    <ConnectToSignalR server={server}>
+    <ConnectToSignalR server={server} autoReconnect={true}>
       {connection => <AdminContent connection={connection} />}
     </ConnectToSignalR>
   </div>
