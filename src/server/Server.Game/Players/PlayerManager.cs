@@ -5,6 +5,7 @@ namespace Server.Game.Players
     public interface IPlayerManager
     {
         Player CreatePlayer(string id, string name);
+        Player GetPlayer(string id);
     }
 
     public class PlayerManager : IPlayerManager
@@ -16,6 +17,11 @@ namespace Server.Game.Players
             var player = new Player(id, name);
             _players.Add(id, player);
             return player;
+        }
+
+        public Player GetPlayer(string id)
+        {
+            return _players[id];
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Server.Game;
 using Server.Game.Players;
 using Server.Game.Spectators;
 
@@ -49,6 +50,30 @@ namespace Server.WebApi.Hubs
             {
                 _playerConnector.Disconnect(Context.ConnectionId);
             }
+            return Task.CompletedTask;
+        }
+
+        public Task MoveUp()
+        {
+            _playerConnector.MakeMove(Context.ConnectionId, Move.Up);
+            return Task.CompletedTask;
+        }
+
+        public Task MoveRight()
+        {
+            _playerConnector.MakeMove(Context.ConnectionId, Move.Right);
+            return Task.CompletedTask;
+        }
+
+        public Task MoveDown()
+        {
+            _playerConnector.MakeMove(Context.ConnectionId, Move.Down);
+            return Task.CompletedTask;
+        }
+
+        public Task MoveLeft()
+        {
+            _playerConnector.MakeMove(Context.ConnectionId, Move.Left);
             return Task.CompletedTask;
         }
     }

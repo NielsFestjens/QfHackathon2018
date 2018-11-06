@@ -73,8 +73,10 @@ class Game implements IGame {
     };
 
     updated = (event: GameUpdatedEvent) => {
+        console.log(event);
         this.grid.update(event);
         const nextMove = this.player.getNextAction(this.grid);
+        console.log(nextMove);
         
         switch(nextMove.action) {
             case ActionType.moveUp: this.connection.moveUp();

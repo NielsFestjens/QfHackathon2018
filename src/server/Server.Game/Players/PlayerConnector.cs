@@ -1,4 +1,3 @@
-using System;
 using Server.Game.Levels;
 
 namespace Server.Game.Players
@@ -9,6 +8,7 @@ namespace Server.Game.Players
         void Connect(string id, string name);
         void Disconnect(string id);
         void StartNextLevel(Player player);
+        void MakeMove(string id, Move move);
     }
 
     public class PlayerConnector : IPlayerConnector
@@ -39,14 +39,22 @@ namespace Server.Game.Players
 
         public void StartNextLevel(Player player)
         {
-            var game = player.StartNextLevel(_levelManager.LoadLevelData);
+            var game = player.StartNextLevel(_levelManager.LoadLevelData, ProcessUpdate);
             _events.OnGameStarted(game);
 
             ProcessUpdate(game);
         }
 
+        public void MakeMove(string id, Move move)
+        {
+            var player = _playerManager.GetPlayer(id);
+            var game = player.ActiveGame;
+            game.SetNextMove(player, move);
+        }
+
         public void ProcessUpdate(Game game)
         {
+            game.ProcessUpdate();
             _events.OnGameUpdated(game);
         }
 

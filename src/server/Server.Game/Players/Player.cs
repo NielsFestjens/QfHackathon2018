@@ -5,11 +5,11 @@ namespace Server.Game.Players
 {
     public class Player
     {
-        private Game _activeGame;
 
         public string Id { get; }
         public string Name { get; }
         public int GameProgress { get; private set; }
+        public Game ActiveGame { get; private set; }
 
         public Player(string id, string name)
         {
@@ -17,15 +17,15 @@ namespace Server.Game.Players
             Name = name;
         }
 
-        public Game StartNextLevel(Func<int, LevelData> levelDataResolver)
+        public Game StartNextLevel(Func<int, LevelData> levelDataResolver, Action<Game> processUpdate)
         {
-            if (_activeGame != null && !_activeGame.IsFinished)
+            if (ActiveGame != null && !ActiveGame.IsFinished)
                 throw new Exception("There's still an active game");
 
             var nextLevel = GameProgress + 1;
             var nextLevelData = levelDataResolver(nextLevel);
-            _activeGame = new Game(nextLevelData, this);
-            return _activeGame;
+            ActiveGame = new Game(nextLevelData, this, processUpdate);
+            return ActiveGame;
         }
     }
 }

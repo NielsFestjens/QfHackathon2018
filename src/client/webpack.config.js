@@ -42,6 +42,7 @@ module.exports = {
             filename: 'spectator.html'
         })
     ],
+    devtool: 'eval-source-map',
     devServer: {
         contentBase: path.join(__dirname, 'dist')
     }
