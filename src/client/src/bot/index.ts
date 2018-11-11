@@ -73,17 +73,16 @@ class Game implements IGame {
     };
 
     updated = (event: GameUpdatedEvent) => {
-        console.log(event);
+        console.log(event.player);
         this.grid.update(event);
         const nextMove = this.player.getNextAction(this.grid);
-        console.log(nextMove);
+        console.log(ActionType[nextMove.action]);
         
         switch(nextMove.action) {
-            case ActionType.moveUp: this.connection.moveUp();
-            case ActionType.moveDown: this.connection.moveDown();
-            case ActionType.moveLeft: this.connection.moveLeft();
-            case ActionType.moveRight: this.connection.moveRight();
-            case ActionType.moveRight: this.connection.moveRight();
+            case ActionType.moveUp: this.connection.moveUp(); break;
+            case ActionType.moveDown: this.connection.moveDown(); break;
+            case ActionType.moveLeft: this.connection.moveLeft(); break;
+            case ActionType.moveRight: this.connection.moveRight(); break;
         }
     };
 }
@@ -91,7 +90,7 @@ class Game implements IGame {
 class Player {
     getNextAction(grid: Grid) {
         const nextAction = new PlayerAction();
-        nextAction.action = ActionType.moveRight;        
+        nextAction.action = ActionType.moveUp;        
         return nextAction;
     }
 }
@@ -156,12 +155,13 @@ type GameStartedEvent = {
 
 type GameUpdatedEvent = {
     tiles: TileInfo[];
+    player: PlayerInfo;
 }
 
 type TileInfo = {
     row: number;
     column: number;
-    contents: TileInfoContent[];
+    contents: TileInfoContent;
 }
 
 type TileInfoContent = {
@@ -183,6 +183,11 @@ type AttackCommand = {
 
 type ConnectCommand = {
     name: string;
+}
+
+type PlayerInfo = {
+    Row: number;
+    Column: number;
 }
 
 start();

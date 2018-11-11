@@ -16,5 +16,6 @@ namespace Server.Game.Levels
         public int Cols { get; set; }
         public int[][] Walls { get; set; }
         public int[][] SpwawnAreas { get; set; }
+        public int[] Finish { get; set; }
     }
 }

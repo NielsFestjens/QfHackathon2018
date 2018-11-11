@@ -49,7 +49,7 @@ namespace Server.WebApi
             AdminsAndSpectators.SendAsync("GameUpdated", new { game.Tiles });
             foreach (var player in game.Players)
             {
-                Client(player.Player.Id).SendAsync("GameUpdated", new { Tiles = game.GetViewportFor(player) });
+                Client(player.Player.Id).SendAsync("GameUpdated", new { Tiles = game.GetViewportFor(player), Player = new { player.Row, player.Column } });
             }
         }
     }

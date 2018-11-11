@@ -24,7 +24,10 @@ namespace Server.Game.Players
 
             var nextLevel = GameProgress + 1;
             var nextLevelData = levelDataResolver(nextLevel);
-            ActiveGame = new Game(nextLevelData, this, processUpdate);
+            ActiveGame = new Game();
+            ActiveGame.LoadLevelData(nextLevelData);
+            ActiveGame.Join(this);
+            ActiveGame.StartTimer(processUpdate);
             return ActiveGame;
         }
     }

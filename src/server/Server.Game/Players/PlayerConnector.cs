@@ -56,6 +56,11 @@ namespace Server.Game.Players
         {
             game.ProcessUpdate();
             _events.OnGameUpdated(game);
+
+            if (game.IsFinished)
+            {
+                game.Dispose();
+            }
         }
 
         public void Disconnect(string id)
