@@ -73,6 +73,7 @@ class Game implements IGame {
 
     started = (event: GameStartedEvent) => {
         this.grid = new Grid(event.columns, event.rows);
+        this.player.target = undefined;
     };
 
     updated = (event: GameUpdatedEvent) => {
@@ -343,11 +344,8 @@ class GameDrawer
             return .5;
         if (tileContent.informationAge === 2)
             return .25;
-        if (tileContent.informationAge === 3)
-            return .125;
-        if (tileContent.informationAge === 4)
-            return .0625;
-        return 0;
+            
+        return .125;
     }
 
     fillRect(left: number, top: number, color: ColorInfo) {

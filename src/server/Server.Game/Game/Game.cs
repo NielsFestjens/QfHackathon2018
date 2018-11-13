@@ -8,7 +8,7 @@ namespace Server.Game
 {
     public class Game : IDisposable
     {
-        private readonly GameMoveLogic _gameMoveLogic;
+        private GameMoveLogic _gameMoveLogic;
         private readonly Random _random;
         private ActionTimer _timer;
 
@@ -68,7 +68,7 @@ namespace Server.Game
 
         public void StartTimer(Action<Game> processUpdate)
         {
-            _timer = new ActionTimer(() => processUpdate(this), TimeSpan.FromSeconds(1));
+            _timer = new ActionTimer(() => processUpdate(this), TimeSpan.FromMilliseconds(100));
             _timer.Start();
         }
 
@@ -112,6 +112,9 @@ namespace Server.Game
         {
             _timer.Dispose();
             _timer = null;
+
+            _gameMoveLogic.Dispose();
+            _gameMoveLogic = null;
 
             foreach (var player in Players)
             {

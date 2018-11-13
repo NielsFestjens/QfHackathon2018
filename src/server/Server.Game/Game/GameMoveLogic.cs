@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Game
 {
-    public class GameMoveLogic
+    public class GameMoveLogic : IDisposable
     {
         private readonly Dictionary<GamePlayer, Move> _moves = new Dictionary<GamePlayer, Move>();
         
@@ -45,8 +46,16 @@ namespace Server.Game
 
         private void MovePlayer(GamePlayer player, int desiredColumn, int desiredRow)
         {
+            if (player.Tile == null)
+                return;
+
             player.Column = player.Tile.Column = desiredColumn;
             player.Row = player.Tile.Row = desiredRow;
+        }
+
+        public void Dispose()
+        {
+            _moves.Clear();
         }
     }
 }
