@@ -1,18 +1,13 @@
 {
-  "name": "Level 1 - Basics",
-  "rooms": 8,
-  "slotsPerRoom": 1,
-  "locked": false,
+  "name": "Level 2 - take a left",
   "grid": {
     "rows": 5,
     "cols": 5,
     "walls": [
-      [ 0, 0 ],
-      [ 0, 1 ]
     ],
     "spwawnAreas": [
       [ 2, 0, 2, 0 ]
     ],
-    "finish": [4, 0]
+    "finish": [0, 4]
   }
 }

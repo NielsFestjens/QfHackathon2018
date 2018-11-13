@@ -1,5 +1,5 @@
 {
-  "name": "Level 1 - Basics",
+  "name": "Level 1 - just run forward",
   "grid": {
     "rows": 5,
     "cols": 5,
@@ -7,6 +7,6 @@
       [ 2, 0, 2, 0 ]
     ],
     "walls": [],
-    "finish": [4, 2]
+    "finish": [2, 4]
   }
 }

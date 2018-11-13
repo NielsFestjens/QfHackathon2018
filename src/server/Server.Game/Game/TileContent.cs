@@ -1,21 +1,23 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Server.Game
 {
+    [DebuggerDisplay("[{Column}, {Row}]: {Type} - {Name}")]
     public abstract class TileContent
     {
-        public int Row { get; set; }
         public int Column { get; set; }
+        public int Row { get; set; }
 
         public abstract TileContentType Type { get; }
         public string Name { get; }
         public virtual bool IsObstacle => false;
 
-        protected TileContent(int row, int column, string name)
+        protected TileContent(int column, int row, string name)
         {
-            Row = row;
             Column = column;
+            Row = row;
             Name = name;
         }
 
@@ -42,7 +44,7 @@ namespace Server.Game
         public override TileContentType Type => TileContentType.Obstacle;
         public override bool IsObstacle => true;
 
-        public ObstacleTileContent(int row, int column, string name) : base(row, column, name)
+        public ObstacleTileContent(int column, int row, string name) : base(column, row, name)
         {
         }
     }
@@ -53,7 +55,7 @@ namespace Server.Game
 
         public GamePlayer Player { get; }
 
-        public PlayerTileContent(int row, int column, GamePlayer player) : base(row, column, player.Player.Name)
+        public PlayerTileContent(int column, int row, GamePlayer player) : base(column, row, player.Player.Name)
         {
             Player = player;
         }
@@ -71,7 +73,7 @@ namespace Server.Game
     {
         private readonly Game _game;
 
-        public FinishTileContent(int row, int column, Game game) : base(row, column, "Finish")
+        public FinishTileContent(int column, int row,Game game) : base(column, row, "Finish")
         {
             _game = game;
         }
@@ -80,7 +82,7 @@ namespace Server.Game
 
         public override void Process()
         {
-            if (_game.Players.Any(x => x.Row == Row && x.Column == Column))
+            if (_game.Players.Any(x => x.Column == Column && x.Row == Row))
             {
                 _game.IsFinished = true;
             }

@@ -2,15 +2,15 @@ namespace Server.Game
 {
     public class TileData
     {
-        public int Row { get; set; }
         public int Column { get; set; }
+        public int Row { get; set; }
 
         public TileContentData Content { get; set; }
 
-        public TileData(int row, int column, TileContentData content)
+        public TileData(int column, int row, TileContentData content)
         {
-            Row = row;
             Column = column;
+            Row = row;
             Content = content;
         }
     }

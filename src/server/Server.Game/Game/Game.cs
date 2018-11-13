@@ -17,8 +17,8 @@ namespace Server.Game
 
         public int Level { get; private set; }
         public string Name { get; private set; }
-        public int Rows { get; private set; }
         public int Columns { get; private set; }
+        public int Rows { get; private set; }
         public List<SpawnArea> SpawnAreas { get; private set; }
 
         public bool IsFinished { get; set; }
@@ -36,8 +36,8 @@ namespace Server.Game
 
             Level = levelData.Level;
             Name = levelData.Name;
-            Rows = levelData.Grid.Rows;
             Columns = levelData.Grid.Cols;
+            Rows = levelData.Grid.Rows;
             SpawnAreas = levelData.Grid.SpwawnAreas.Select(x => new SpawnArea(x)).ToList();
 
             foreach (var coords in levelData.Grid.Walls)
@@ -58,7 +58,7 @@ namespace Server.Game
         private void Spawn(GamePlayer player)
         {
             (player.Column, player.Row) = SpawnAreas[_random.Next(SpawnAreas.Count)].GetRandomPoint(_random);
-            var playerTile = new PlayerTileContent(player.Row, player.Column, player);
+            var playerTile = new PlayerTileContent(player.Column, player.Row, player);
             player.Tile = playerTile;
             Tiles.Add(playerTile);
         }
@@ -71,14 +71,14 @@ namespace Server.Game
 
         public List<TileData> GetViewportFor(GamePlayer player)
         {
-            var minRow = player.Row - player.ViewDistance;
-            var maxRow = player.Row + player.ViewDistance;
             var minCol = player.Column - player.ViewDistance;
             var maxCol = player.Column + player.ViewDistance;
+            var minRow = player.Row - player.ViewDistance;
+            var maxRow = player.Row + player.ViewDistance;
 
             return Tiles
-                .Where(tile => tile.Row >= minRow && tile.Row <= maxRow && tile.Column >= minCol && tile.Column <= maxCol)
-                .Select(x => new TileData(x.Row, x.Column, x.MapToData(player)))
+                .Where(tile => tile.Column >= minCol && tile.Column <= maxCol && tile.Row >= minRow && tile.Row <= maxRow)
+                .Select(x => new TileData(x.Column, x.Row, x.MapToData(player)))
                 .ToList();
         }
 
