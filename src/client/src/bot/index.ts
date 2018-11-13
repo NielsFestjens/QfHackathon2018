@@ -1,4 +1,5 @@
 import * as signalR from '@aspnet/signalr';
+import * as Astar from './astar';
 
 const server = 'http://localhost:60860';
 
@@ -101,19 +102,28 @@ class Player {
 
     getNextAction(grid: Grid) {
         this.ensureTarget(grid);
+        
         if (!this.target)
             return new PlayerAction(ActionType.unknown);
 
-        if (this.target!.Row < this.coordinate.Row)
+        if (this.target.Column == this.coordinate.Column && this.target.Row == this.coordinate.Row)
+            return new PlayerAction(ActionType.unknown);
+
+        var graph = new Astar.Graph(grid.weights);
+        var from = graph.grid[this.coordinate.Column][this.coordinate.Row];
+        var to = graph.grid[this.target.Column][this.target.Row];
+        var nextPosition = Astar.astar.search(graph, from, to)[0];
+
+        if (nextPosition.y < this.coordinate.Row)
             return new PlayerAction(ActionType.moveDown);
 
-        if (this.target!.Row > this.coordinate.Row)
+        if (nextPosition.y > this.coordinate.Row)
             return new PlayerAction(ActionType.moveUp);
 
-        if (this.target!.Column < this.coordinate.Column)
+        if (nextPosition.x < this.coordinate.Column)
             return new PlayerAction(ActionType.moveLeft);
 
-        if (this.target!.Column > this.coordinate.Column)
+        if (nextPosition.x > this.coordinate.Column)
             return new PlayerAction(ActionType.moveRight);
         
         return new PlayerAction(ActionType.unknown);
@@ -164,14 +174,18 @@ enum ActionType {
 
 class Grid {
 
+    weights: number[][];
     tiles: Tile[][];
 
     constructor(sizeX: number, sizeY: number) {
         this.tiles = [];
+        this.weights = [];
         for (let column = 0; column < sizeX; column++) {
             this.tiles[column] = [];
+            this.weights[column] = [];
             for (let row = 0; row < sizeY; row++) {
                 this.tiles[column][row] = new Tile({ Column: column, Row: row });
+                this.weights[column][row] = 1;
             }
         }
     }
@@ -181,6 +195,7 @@ class Grid {
             for (let tile of tileRow) {
                 for (let content of tile.contents) {
                     ++content.informationAge;
+                    this.weights[tile.coordinate.Column][tile.coordinate.Row] = 1;
                 }
             }
         }
@@ -196,6 +211,9 @@ class Grid {
         var content = new TileContent();
         content.type = tileInfo.content.type;
         tile.contents.push(content)
+
+        if (tileInfo.content.type === TileInfoContentType.Obstacle)
+            this.weights[tileInfo.column][tileInfo.row] = 0;
     }
 }
 
