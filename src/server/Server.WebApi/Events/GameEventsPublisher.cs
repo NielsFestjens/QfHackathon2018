@@ -44,13 +44,21 @@ namespace Server.WebApi
         public Task OnGameStarted(Game.Game game)
             => AdminsAndSpectatorsAndClients(game.Players.Select(x => x.Player.Id)).SendAsync("GameStarted", new { game.Level, game.Name, game.Rows, game.Columns });
 
-        public void OnGameUpdated(Game.Game game)
+        public Task OnGameUpdated(Game.Game game)
         {
-            AdminsAndSpectators.SendAsync("GameUpdated", new { game.Tiles });
+            var tasks = new List<Task>();
+            tasks.Add(AdminsAndSpectators.SendAsync("GameUpdated", new { game.Tiles }));
             foreach (var player in game.Players)
             {
-                Client(player.Player.Id).SendAsync("GameUpdated", new { Tiles = game.GetViewportFor(player), Player = new { player.Row, player.Column } });
+                tasks.Add(Client(player.Player.Id).SendAsync("GameUpdated", new { Tiles = game.GetViewportFor(player), Player = new { player.Row, player.Column } }));
             }
+
+            return Task.WhenAll(tasks);
+        }
+
+        public Task OnGameFinished(Game.Game game)
+        {
+            return AdminsAndSpectatorsAndClients(game.Players.Select(x => x.Player.Id)).SendAsync("GameFinished", new { game.Level, game.Name });
         }
     }
 }

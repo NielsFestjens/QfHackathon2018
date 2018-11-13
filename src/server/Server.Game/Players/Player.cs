@@ -5,7 +5,6 @@ namespace Server.Game.Players
 {
     public class Player
     {
-
         public string Id { get; }
         public string Name { get; }
         public int GameProgress { get; private set; }
@@ -29,6 +28,12 @@ namespace Server.Game.Players
             ActiveGame.Join(this);
             ActiveGame.StartTimer(processUpdate);
             return ActiveGame;
+        }
+
+        public void FinishedGame()
+        {
+            GameProgress += 1;
+            ActiveGame = null;
         }
     }
 }

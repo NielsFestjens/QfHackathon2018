@@ -1,3 +1,4 @@
+using System.Linq;
 using Server.Game.Levels;
 
 namespace Server.Game.Players
@@ -49,7 +50,7 @@ namespace Server.Game.Players
         {
             var player = _playerManager.GetPlayer(id);
             var game = player.ActiveGame;
-            game.SetNextMove(player, move);
+            game?.SetNextMove(player, move);
         }
 
         public void ProcessUpdate(Game game)
@@ -59,8 +60,20 @@ namespace Server.Game.Players
 
             if (game.IsFinished)
             {
+                var players = game.Players.Select(x => x.Player).ToList();
                 game.Dispose();
+                foreach (var player in players)
+                {
+                    FinishedGame(player, game);
+                }
             }
+        }
+
+        public void FinishedGame(Player player, Game game)
+        {
+            player.FinishedGame();
+            _events.OnGameFinished(game);
+            StartNextLevel(player);
         }
 
         public void Disconnect(string id)

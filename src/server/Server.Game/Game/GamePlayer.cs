@@ -9,7 +9,7 @@ namespace Server.Game
         public Game Game { get; }
         public int Row { get; set; }
         public int Column { get; set; }
-        public int ViewDistance { get; } = 3;
+        public int ViewDistance { get; } = 5;
         public TileContent Tile { get; set; }
 
         public GamePlayer(Player player, Game game)

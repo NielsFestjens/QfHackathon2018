@@ -55,7 +55,7 @@ namespace Server.Game
         private void Spawn(GamePlayer player)
         {
             (player.Column, player.Row) = SpawnAreas[_random.Next(SpawnAreas.Count)].GetRandomPoint(_random);
-            var playerTile = new PlayerTileContent(player.Column, player.Row, player);
+            var playerTile = new PlayerTileContent(player.Row, player.Column, player);
             player.Tile = playerTile;
             Tiles.Add(playerTile);
         }
@@ -81,7 +81,10 @@ namespace Server.Game
 
         public void SetNextMove(Player player, Move move)
         {
-            var gamePlayer = Players.Single(x => x.Player == player);
+            var gamePlayer = Players.SingleOrDefault(x => x.Player == player);
+            if (gamePlayer == null)
+                return;
+
             _gameMoveLogic.SetNextMove(gamePlayer, move);
         }
 
