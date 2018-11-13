@@ -31,6 +31,9 @@ namespace Server.Game
 
         public void LoadLevelData(LevelData levelData)
         {
+            if (levelData == null)
+                return;
+
             Level = levelData.Level;
             Name = levelData.Name;
             Rows = levelData.Grid.Rows;

@@ -12,7 +12,11 @@ namespace Server.Game.Levels
     {
         public LevelData LoadLevelData(int level)
         {
-            var levelDataJson = File.ReadAllText($"App_Data\\levels\\{level}.json");
+            var fileName = $"App_Data\\levels\\{level}.json";
+            if (!File.Exists(fileName))
+                return null;
+
+            var levelDataJson = File.ReadAllText(fileName);
             var levelData = JsonConvert.DeserializeObject<LevelData>(levelDataJson);
             levelData.Level = level;
             return levelData;

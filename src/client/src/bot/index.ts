@@ -75,7 +75,8 @@ class Game implements IGame {
     };
 
     updated = (event: GameUpdatedEvent) => {
-        console.log(event.player);
+        this.player.coordinate.Column = event.player.column;
+        this.player.coordinate.Row = event.player.row;
         this.grid.update(event);
         const nextMove = this.player.getNextAction(this.grid);
         console.log(ActionType[nextMove.action]);
@@ -89,17 +90,67 @@ class Game implements IGame {
     };
 }
 
+type Coordinate = {
+    Column: number;
+    Row: number;
+}
+
 class Player {
+    coordinate: Coordinate = { Row: 0, Column: 0 };
+    target?: Coordinate;
+
     getNextAction(grid: Grid) {
-        const nextAction = new PlayerAction();
-        nextAction.action = ActionType.moveUp;        
-        return nextAction;
+        this.ensureTarget(grid);
+        if (!this.target)
+            return new PlayerAction(ActionType.unknown);
+
+        if (this.target!.Row < this.coordinate.Row)
+            return new PlayerAction(ActionType.moveDown);
+
+        if (this.target!.Row > this.coordinate.Row)
+            return new PlayerAction(ActionType.moveUp);
+
+        if (this.target!.Column < this.coordinate.Column)
+            return new PlayerAction(ActionType.moveLeft);
+
+        if (this.target!.Column > this.coordinate.Column)
+            return new PlayerAction(ActionType.moveRight);
+        
+        return new PlayerAction(ActionType.unknown);
+    }
+
+    ensureTarget(grid: Grid): any {
+        if (this.target && this.target.Column == this.coordinate.Column && this.target.Row == this.coordinate.Row)
+            this.target = undefined;
+        
+        if (this.target)
+            return;
+
+        this.target = this.findCoordinateByContentType(grid, TileInfoContentType.Finish);
+        console.log(`new target: ${this.target}`)
+    }
+
+    findCoordinateByContentType(grid: Grid, contentType: TileInfoContentType): Coordinate | undefined {
+        for (let tileRow of grid.tiles) {
+            for (let tile of tileRow) {
+                for (let content of tile.contents) {
+                    if (content.type === contentType)
+                        return tile.coordinate;
+                }
+            }
+        }
+
+        return undefined;
     }
 }
 
 class PlayerAction {
-    action: ActionType = 0;
+    action: ActionType;
     payload: any;
+
+    constructor(action: ActionType) {
+        this.action = action;
+    }
 }
 
 enum ActionType {
@@ -117,10 +168,10 @@ class Grid {
 
     constructor(sizeX: number, sizeY: number) {
         this.tiles = [];
-        for (let x = 0; x < sizeX; x++) {
-            this.tiles[x] = [];
-            for (let y = 0; y < sizeY; y++) {
-                this.tiles[x][y] = new Tile();
+        for (let column = 0; column < sizeX; column++) {
+            this.tiles[column] = [];
+            for (let row = 0; row < sizeY; row++) {
+                this.tiles[column][row] = new Tile({ Column: column, Row: row });
             }
         }
     }
@@ -149,7 +200,13 @@ class Grid {
 }
 
 class Tile {
+    coordinate: Coordinate;
     contents: TileContent[] = [];
+    
+    constructor(coordinate: Coordinate) {
+        this.coordinate = coordinate;
+    }
+
 }
 
 class TileContent {
@@ -200,8 +257,8 @@ type ConnectCommand = {
 }
 
 type PlayerInfo = {
-    Row: number;
-    Column: number;
+    row: number;
+    column: number;
 }
 
 class GameDrawer
