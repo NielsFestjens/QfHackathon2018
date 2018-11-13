@@ -19,7 +19,7 @@ namespace Server.Game
         public string Name { get; private set; }
         public int Columns { get; private set; }
         public int Rows { get; private set; }
-        public List<SpawnArea> SpawnAreas { get; private set; }
+        public List<SpawnArea> SpawnAreas { get; private set; } = new List<SpawnArea>();
 
         public bool IsFinished { get; set; }
 
@@ -57,6 +57,9 @@ namespace Server.Game
 
         private void Spawn(GamePlayer player)
         {
+            if (!SpawnAreas.Any())
+                return;
+
             (player.Column, player.Row) = SpawnAreas[_random.Next(SpawnAreas.Count)].GetRandomPoint(_random);
             var playerTile = new PlayerTileContent(player.Column, player.Row, player);
             player.Tile = playerTile;

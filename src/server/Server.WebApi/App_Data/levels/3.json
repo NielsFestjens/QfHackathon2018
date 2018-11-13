@@ -1,8 +1,5 @@
 {
-  "name": "Level 31 - a-maze-ing",
-  "rooms": 8,
-  "slotsPerRoom": 1,
-  "locked": false,
+  "name": "Level 3 - a-maze-ing",
   "grid": {
     "rows": 5,
     "cols": 5,

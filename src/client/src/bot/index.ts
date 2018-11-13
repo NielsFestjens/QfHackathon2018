@@ -103,8 +103,9 @@ class Player {
     getNextAction(grid: Grid) {
         this.ensureTarget(grid);
         
+        // todo: go exploring
         if (!this.target)
-            return new PlayerAction(ActionType.unknown);
+            return new PlayerAction(ActionType.moveRight);
 
         if (this.target.Column == this.coordinate.Column && this.target.Row == this.coordinate.Row)
             return new PlayerAction(ActionType.unknown);
@@ -287,6 +288,12 @@ class GameDrawer
 
     private rectangleSize = 20;
 
+    drawMap = [
+        { Type: TileInfoContentType.Finish, Color: Color.Gold },
+        { Type: TileInfoContentType.Friendly, Color: Color.Green },
+        { Type: TileInfoContentType.Obstacle, Color: Color.Black },
+    ]
+
     constructor(game: Game, container: HTMLCanvasElement) {
         this.game = game;
         this.container = container;
@@ -316,13 +323,11 @@ class GameDrawer
     }
 
     determineTileColor(tile: Tile): ColorInfo {
-        var finish = this.getContentOfType(tile, TileInfoContentType.Finish);
-        if (finish)
-            return { Color: Color.Gold, Alpha: this.getAlphaForAge(finish) };
-
-        var friendly = this.getContentOfType(tile, TileInfoContentType.Friendly);
-        if (friendly)
-            return { Color: Color.Green, Alpha: this.getAlphaForAge(friendly) };
+        for (var map of this.drawMap) {
+            var content = this.getContentOfType(tile, map.Type);
+            if (content)
+                return { Color: map.Color, Alpha: this.getAlphaForAge(content) };
+        }
 
         return { Color: Color.LightGray };
     }
